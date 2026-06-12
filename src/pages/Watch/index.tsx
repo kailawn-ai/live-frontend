@@ -51,6 +51,12 @@ export function Watch() {
         return false;
       }
 
+      if (shouldRedirectToExternalPlayer(liveStream.hlsUrl)) {
+        setMessage("Opening live stream...");
+        window.location.replace(liveStream.hlsUrl);
+        return true;
+      }
+
       setStream(liveStream);
       setMessage("");
       return true;
@@ -78,4 +84,13 @@ export function Watch() {
       </p>
     </div>
   );
+}
+
+function shouldRedirectToExternalPlayer(src: string) {
+  try {
+    const url = new URL(src);
+    return url.hostname === "player.castr.com";
+  } catch {
+    return false;
+  }
 }
