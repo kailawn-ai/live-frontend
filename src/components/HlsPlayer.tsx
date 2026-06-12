@@ -30,8 +30,11 @@ export function HlsPlayer(props: HlsPlayerProps) {
   const [message, setMessage] = useState("Loading live stream...");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const isEmbedPlayer = shouldUseEmbedPlayer(props.src);
 
   useEffect(() => {
+    if (isEmbedPlayer) return;
+
     let hls: InstanceType<HlsConstructor> | null = null;
     let isActive = true;
 
@@ -67,7 +70,7 @@ export function HlsPlayer(props: HlsPlayerProps) {
       isActive = false;
       hls?.destroy();
     };
-  }, [props.src]);
+  }, [isEmbedPlayer, props.src]);
 
   useEffect(() => {
     function syncFullscreenState() {
@@ -133,6 +136,33 @@ export function HlsPlayer(props: HlsPlayerProps) {
     window.location.href = "/";
   }
 
+  if (isEmbedPlayer) {
+    return (
+      <div
+        ref={containerRef}
+        class={`relative bg-black ${props.embedded ? "h-full w-full" : "h-screen w-screen"}`}
+      >
+        <iframe
+          class="h-full w-full border-0 bg-black"
+          src={props.src}
+          title={props.title}
+          allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+          allowFullScreen
+        />
+
+        <button
+          type="button"
+          onClick={logout}
+          class={`absolute right-5 top-5 z-20 rounded-md border border-white/30 bg-black/70 px-4 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:border-teal-300 hover:bg-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-300 ${
+            props.showLogout === false ? "hidden" : ""
+          }`}
+        >
+          Logout
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div
       ref={containerRef}
@@ -190,6 +220,15 @@ export function HlsPlayer(props: HlsPlayerProps) {
       )}
     </div>
   );
+}
+
+function shouldUseEmbedPlayer(src: string) {
+  try {
+    const url = new URL(src);
+    return url.hostname === "player.castr.com" || !url.pathname.toLowerCase().endsWith(".m3u8");
+  } catch {
+    return false;
+  }
 }
 
 function FullscreenIcon() {
