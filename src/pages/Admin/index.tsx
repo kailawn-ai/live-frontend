@@ -3,7 +3,7 @@ import { AdminShell } from "./admin-shell";
 export function Admin() {
   return (
     <AdminShell title="Stream Control">
-      <section class="grid grid-cols-3 gap-3 md:gap-4">
+      <section class="admin-card-grid">
         <AdminCard
           href="/admin/users"
           title="Users"
@@ -38,15 +38,15 @@ function AdminCard(props: AdminCardProps) {
   return (
     <a
       href={props.href}
-      class="block rounded-lg border border-slate-700 bg-slate-900 p-3 shadow-xl shadow-black transition hover:-translate-y-1 hover:border-teal-300 hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-teal-300 md:p-5"
+      class="admin-card"
     >
-      <p class="text-xs font-black uppercase tracking-widest text-teal-300 md:text-sm">
+      <p class="admin-card-eyebrow">
         {props.title}
       </p>
-      <h2 class="mt-2 text-base font-black text-white md:mt-3 md:text-2xl">
+      <h2 class="admin-card-title">
         {props.value}
       </h2>
-      <p class="mt-3 hidden text-slate-300 md:block">{props.description}</p>
+      <p class="admin-card-copy">{props.description}</p>
     </a>
   );
 }

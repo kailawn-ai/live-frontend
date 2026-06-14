@@ -78,8 +78,8 @@ export function Watch() {
   }
 
   return (
-    <div class="flex h-screen w-screen items-center justify-center bg-black px-6 text-center text-white">
-      <p class="rounded-md border border-slate-700 bg-slate-900 px-6 py-4 text-xl font-black">
+    <div class="watch-loading-page">
+      <p class="watch-loading-message">
         {message}
       </p>
     </div>

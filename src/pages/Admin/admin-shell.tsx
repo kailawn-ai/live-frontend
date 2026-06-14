@@ -49,9 +49,9 @@ export function AdminShell(props: AdminShellProps) {
 
   if (!user) {
     return (
-      <div class="min-h-screen bg-black px-6 py-10 text-white">
-        <div class="mx-auto flex min-h-screen max-w-4xl items-center justify-center">
-          <p class="rounded-md border border-slate-700 bg-slate-900 px-6 py-4 text-lg font-bold text-slate-200">
+      <div class="admin-page">
+        <div class="admin-loading-shell">
+          <p class="admin-loading-message">
             {message}
           </p>
         </div>
@@ -60,29 +60,29 @@ export function AdminShell(props: AdminShellProps) {
   }
 
   return (
-    <div class="min-h-screen bg-black px-6 py-10 text-white sm:px-10">
-      <div class="mx-auto max-w-6xl">
-        <header class="mb-8 flex flex-wrap items-center justify-between gap-4">
+    <div class="admin-page">
+      <div class="admin-shell">
+        <header class="admin-header">
           <div>
             <a
               href="/admin"
-              class="text-sm font-black uppercase tracking-widest text-teal-300"
+              class="admin-eyebrow"
             >
               {props.eyebrow || "Admin"}
             </a>
-            <h1 class="mt-2 text-4xl font-black text-white">{props.title}</h1>
+            <h1 class="admin-title">{props.title}</h1>
           </div>
 
           <button
             type="button"
             onClick={logout}
-            class="h-12 rounded-md border border-slate-600 px-5 font-bold text-slate-100 transition hover:border-slate-300 hover:bg-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-300"
+            class="secondary-button admin-logout-button"
           >
             Logout
           </button>
         </header>
 
-        <div class="mt-10 grid gap-6">
+        <div class="admin-content">
           <div>{props.children}</div>
         </div>
       </div>

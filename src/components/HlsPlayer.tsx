@@ -140,10 +140,10 @@ export function HlsPlayer(props: HlsPlayerProps) {
     return (
       <div
         ref={containerRef}
-        class={`relative bg-black ${props.embedded ? "h-full w-full" : "h-screen w-screen"}`}
+        class={`player-frame ${props.embedded ? "player-frame-embedded" : "player-frame-full"}`}
       >
         <iframe
-          class="h-full w-full border-0 bg-black"
+          class="player-iframe"
           src={props.src}
           title={props.title}
           allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
@@ -153,8 +153,8 @@ export function HlsPlayer(props: HlsPlayerProps) {
         <button
           type="button"
           onClick={logout}
-          class={`absolute right-5 top-5 z-20 rounded-md border border-white/30 bg-black/70 px-4 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:border-teal-300 hover:bg-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-300 ${
-            props.showLogout === false ? "hidden" : ""
+          class={`player-control-button player-logout-button ${
+            props.showLogout === false ? "is-hidden" : ""
           }`}
         >
           Logout
@@ -166,7 +166,7 @@ export function HlsPlayer(props: HlsPlayerProps) {
   return (
     <div
       ref={containerRef}
-      class={`relative bg-black ${props.embedded ? "h-full w-full" : "h-screen w-screen"}`}
+      class={`player-frame ${props.embedded ? "player-frame-embedded" : "player-frame-full"}`}
       onClick={() => {
         showControlsTemporarily();
         startPlayback();
@@ -183,7 +183,7 @@ export function HlsPlayer(props: HlsPlayerProps) {
     >
       <video
         ref={videoRef}
-        class="h-full w-full bg-black object-contain"
+        class="player-video"
         autoPlay
         playsInline
         title={props.title}
@@ -192,9 +192,9 @@ export function HlsPlayer(props: HlsPlayerProps) {
       <button
         type="button"
         onClick={logout}
-        class={`absolute right-5 top-5 z-20 rounded-md border border-white/30 bg-black/70 px-4 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:border-teal-300 hover:bg-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-300 ${
-          showControls ? "opacity-100" : "pointer-events-none opacity-0"
-        } ${props.showLogout === false ? "hidden" : ""}`}
+        class={`player-control-button player-logout-button ${
+          showControls ? "is-visible" : "is-faded"
+        } ${props.showLogout === false ? "is-hidden" : ""}`}
       >
         Logout
       </button>
@@ -202,8 +202,8 @@ export function HlsPlayer(props: HlsPlayerProps) {
       <button
         type="button"
         onClick={toggleFullscreen}
-        class={`absolute bottom-5 right-5 z-20 flex h-12 w-12 items-center justify-center rounded-md border border-white/30 bg-black/70 text-white transition hover:border-teal-300 hover:bg-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-300 ${
-          showControls ? "opacity-100" : "pointer-events-none opacity-0"
+        class={`player-control-button player-fullscreen-button ${
+          showControls ? "is-visible" : "is-faded"
         }`}
         aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
         title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
@@ -212,8 +212,8 @@ export function HlsPlayer(props: HlsPlayerProps) {
       </button>
 
       {message && (
-        <div class="absolute inset-0 flex items-center justify-center bg-black/70 px-6 text-center">
-          <p class="rounded-md border border-slate-700 bg-slate-900 px-6 py-4 text-xl font-black text-white">
+        <div class="player-message-layer">
+          <p class="player-message">
             {message}
           </p>
         </div>
@@ -233,7 +233,7 @@ function shouldUseEmbedPlayer(src: string) {
 
 function FullscreenIcon() {
   return (
-    <svg viewBox="0 0 24 24" class="h-6 w-6" aria-hidden="true">
+    <svg viewBox="0 0 24 24" class="player-icon" aria-hidden="true">
       <path
         d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
         fill="none"
@@ -248,7 +248,7 @@ function FullscreenIcon() {
 
 function ExitFullscreenIcon() {
   return (
-    <svg viewBox="0 0 24 24" class="h-6 w-6" aria-hidden="true">
+    <svg viewBox="0 0 24 24" class="player-icon" aria-hidden="true">
       <path
         d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"
         fill="none"
