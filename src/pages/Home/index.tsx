@@ -1,7 +1,9 @@
 import { useEffect, useState } from "preact/hooks";
 import { ApiError } from "../../lib/api-client";
 import {
+  getCachedCurrentUser,
   getCurrentUser,
+  isLoggedInBrowser,
   login as loginUser,
   logout as logoutUser,
   type AuthUser,
@@ -13,6 +15,7 @@ export function Home() {
   const [message, setMessage] = useState("");
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRestoringSession, setIsRestoringSession] = useState(true);
 
   const canLogin = email.includes("@") && password.length >= 6;
 
@@ -21,19 +24,30 @@ export function Home() {
   }, []);
 
   async function restoreSession() {
+    if (!isLoggedInBrowser()) {
+      setIsRestoringSession(false);
+      return;
+    }
+
+    const cachedUser = getCachedCurrentUser();
+
+    if (cachedUser) {
+      redirectAuthenticatedUser(cachedUser);
+      return;
+    }
+
     try {
       const currentUser = await getCurrentUser();
-
-      if (currentUser.role === "admin") {
-        window.location.href = "/admin";
-        return;
-      }
-
-      setUser(currentUser);
-      window.location.href = "/watch";
+      redirectAuthenticatedUser(currentUser);
     } catch {
       logoutUser();
+      setIsRestoringSession(false);
     }
+  }
+
+  function redirectAuthenticatedUser(currentUser: AuthUser) {
+    setUser(currentUser);
+    window.location.href = currentUser.role === "admin" ? "/admin" : "/watch";
   }
 
   async function login(event: Event) {
@@ -50,14 +64,8 @@ export function Home() {
     try {
       const loggedInUser = await loginUser(email, password);
 
-      if (loggedInUser.role === "admin") {
-        window.location.href = "/admin";
-        return;
-      }
-
-      setUser(loggedInUser);
       setPassword("");
-      window.location.href = "/watch";
+      redirectAuthenticatedUser(loggedInUser);
     } catch (error) {
       setMessage(error instanceof ApiError ? error.message : "Unable to login right now.");
     } finally {
@@ -91,7 +99,14 @@ export function Home() {
             onSubmit={login}
             class="login-card"
           >
-            {user ? (
+            {isRestoringSession ? (
+              <div class="login-status">
+                <p class="login-label">
+                  Signed in
+                </p>
+                <p class="login-user-email">Opening your account...</p>
+              </div>
+            ) : user ? (
               <div>
                 <div class="login-status">
                   <p class="login-label">

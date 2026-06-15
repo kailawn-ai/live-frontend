@@ -1,4 +1,11 @@
-import { apiRequest, clearAuthToken, setAuthToken } from "../lib/api-client";
+import {
+  apiRequest,
+  clearAuthToken,
+  getCachedAuthUser,
+  hasAuthToken,
+  setAuthToken,
+  setCachedAuthUser,
+} from "../lib/api-client";
 
 export type AuthUser = {
   id: number;
@@ -20,12 +27,22 @@ export async function login(email: string, password: string) {
   });
 
   setAuthToken(response.token);
+  setCachedAuthUser(response.user);
   return response.user;
 }
 
 export async function getCurrentUser() {
   const response = await apiRequest<{ user: AuthUser }>("/auth/me");
+  setCachedAuthUser(response.user);
   return response.user;
+}
+
+export function getCachedCurrentUser() {
+  return getCachedAuthUser<AuthUser>();
+}
+
+export function isLoggedInBrowser() {
+  return hasAuthToken();
 }
 
 export function logout() {
