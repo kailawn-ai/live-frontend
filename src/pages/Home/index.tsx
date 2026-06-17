@@ -1,5 +1,4 @@
 import { useEffect, useState } from "preact/hooks";
-import { ApiError } from "../../lib/api-client";
 import {
   getCachedCurrentUser,
   getCurrentUser,
@@ -67,7 +66,7 @@ export function Home() {
       setPassword("");
       redirectAuthenticatedUser(loggedInUser);
     } catch (error) {
-      setMessage(error instanceof ApiError ? error.message : "Unable to login right now.");
+      setMessage(error instanceof Error ? error.message : "Unable to login right now.");
     } finally {
       setIsLoading(false);
     }

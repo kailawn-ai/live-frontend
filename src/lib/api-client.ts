@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:4000";
+const API_BASE_URL = resolveApiBaseUrl(import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:4000");
 const AUTH_TOKEN_KEY = "zostream_fifa_auth_token";
 const AUTH_USER_KEY = "zostream_fifa_auth_user";
 
@@ -78,4 +78,27 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
   }
 
   return payload as T;
+}
+
+function resolveApiBaseUrl(configuredUrl: string) {
+  if (typeof window === "undefined") return configuredUrl;
+
+  const browserHost = window.location.hostname;
+  const isBrowserLocalhost = browserHost === "127.0.0.1" || browserHost === "localhost";
+
+  if (isBrowserLocalhost) return configuredUrl;
+
+  try {
+    const url = new URL(configuredUrl);
+    const isConfiguredLocalhost = url.hostname === "127.0.0.1" || url.hostname === "localhost";
+
+    if (isConfiguredLocalhost) {
+      url.hostname = browserHost;
+      return url.toString().replace(/\/$/, "");
+    }
+  } catch {
+    return configuredUrl;
+  }
+
+  return configuredUrl;
 }

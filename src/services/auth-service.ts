@@ -19,6 +19,11 @@ type LoginResponse = {
   user: AuthUser;
 };
 
+type CurrentUserResponse = {
+  token?: string;
+  user: AuthUser;
+};
+
 export async function login(email: string, password: string) {
   const response = await apiRequest<LoginResponse>("/auth/login", {
     method: "POST",
@@ -26,13 +31,20 @@ export async function login(email: string, password: string) {
     body: JSON.stringify({ email, password }),
   });
 
+  assertLoginResponse(response);
   setAuthToken(response.token);
   setCachedAuthUser(response.user);
   return response.user;
 }
 
 export async function getCurrentUser() {
-  const response = await apiRequest<{ user: AuthUser }>("/auth/me");
+  const response = await apiRequest<CurrentUserResponse>("/auth/me");
+  assertAuthUser(response.user);
+
+  if (response.token) {
+    setAuthToken(response.token);
+  }
+
   setCachedAuthUser(response.user);
   return response.user;
 }
@@ -47,4 +59,18 @@ export function isLoggedInBrowser() {
 
 export function logout() {
   clearAuthToken();
+}
+
+function assertLoginResponse(response: LoginResponse) {
+  if (!response || typeof response.token !== "string" || !response.token) {
+    throw new Error("Login succeeded, but the server did not return a session token.");
+  }
+
+  assertAuthUser(response.user);
+}
+
+function assertAuthUser(user: AuthUser) {
+  if (!user || typeof user.email !== "string" || (user.role !== "user" && user.role !== "admin")) {
+    throw new Error("Login succeeded, but the server returned invalid user data.");
+  }
 }
